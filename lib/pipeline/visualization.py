@@ -104,6 +104,10 @@ def visualize_tram(seq_folder, floor_scale=2, bin_size=-1, max_faces_per_bin=300
             
             tid = track_tid[i]
             verts_colors = torch.stack([colors[t] for t in tid]).to('cuda')
+        else:
+            # 根据实际shape创建空tensor
+            verts_list = torch.empty(0, 1, 6890, 3, dtype=torch.float32).to('cuda')
+            verts_colors = torch.empty(0, 4, dtype=torch.float32).to('cuda')  # 注意是4维，不是3维
 
         faces = renderer.faces.clone().squeeze(0)
         cameras, lights = renderer.create_camera_from_cv(view_cam_R[[i]], 

@@ -14,6 +14,7 @@ from lib.pipeline import visualize_tram
 parser = argparse.ArgumentParser()
 parser.add_argument('--video', type=str, default='./example_video.mov', help='input video')
 parser.add_argument('--max_humans', type=int, default=20, help='maximum number of humans to reconstruct')
+parser.add_argument('--output_dir', type=str, default=None, help='output directory')
 args = parser.parse_args()
 
 # File and folders
@@ -21,7 +22,10 @@ file = args.video
 root = os.path.dirname(file)
 seq = os.path.basename(file).split('.')[0]
 
-seq_folder = f'results/{seq}'
+if args.output_dir is not None:
+    seq_folder = args.output_dir
+else:
+    seq_folder = f'results/{seq}'
 img_folder = f'{seq_folder}/images'
 hps_folder = f'{seq_folder}/hps'
 os.makedirs(hps_folder, exist_ok=True)

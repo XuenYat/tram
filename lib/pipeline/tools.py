@@ -3,6 +3,8 @@ from tqdm import tqdm
 import numpy as np
 import torch
 import torchvision
+import os
+import sys
 
 from segment_anything import SamPredictor, sam_model_registry
 from pycocotools import mask as masktool
@@ -46,8 +48,11 @@ def detect_segment_track(imgfiles, out_path, thresh=0.5, min_size=None,
     Segmentation: SAM.
     Tracking: DEVA-Track-Anything. 
     """
+    # 使用相对导入path_utils
+    from ..utils.path_utils import get_pretrain_path
+    
     # ViTDet
-    cfg_path = 'data/pretrain/cascade_mask_rcnn_vitdet_h_75ep.py'
+    cfg_path = get_pretrain_path('cascade_mask_rcnn_vitdet_h_75ep.py')
     detectron2_cfg = LazyConfig.load(str(cfg_path))
     detectron2_cfg.train.init_checkpoint = "https://dl.fbaipublicfiles.com/detectron2/ViTDet/COCO/cascade_mask_rcnn_vitdet_h/f328730692/model_final_f05665.pkl"
     for i in range(3):
@@ -55,7 +60,8 @@ def detect_segment_track(imgfiles, out_path, thresh=0.5, min_size=None,
     detector = DefaultPredictor_Lazy(detectron2_cfg)
 
     # SAM
-    sam = sam_model_registry["vit_h"](checkpoint="data/pretrain/sam_vit_h_4b8939.pth")
+    sam_checkpoint = get_pretrain_path('sam_vit_h_4b8939.pth')
+    sam = sam_model_registry["vit_h"](checkpoint=sam_checkpoint)
     _ = sam.to(device)
     predictor = SamPredictor(sam)
 
@@ -99,7 +105,8 @@ def detect_segment_track(imgfiles, out_path, thresh=0.5, min_size=None,
                 masks = masks.cpu().squeeze(1)
                 mask = masks.sum(dim=0)
         else:
-            mask = np.zeros_like(mask)
+            mask = torch.zeros((img_cv2.shape[0], img_cv2.shape[1]), dtype=torch.int64)
+            #mask = np.zeros_like(mask)
 
         ### --- DEVA ---
         if len(boxes)>0 and (boxes[:, -1] > 0.80).sum()>0:

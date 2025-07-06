@@ -1,6 +1,26 @@
 import sys
 import os
-sys.path.insert(0, os.path.dirname(__file__) + '/..')
+
+# 添加TRAM根目录到Python路径
+def bootstrap_tram_path():
+    """引导函数：找到TRAM根目录并添加到Python路径"""
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # 向上搜索，直到找到包含train.py的目录
+    search_dir = current_dir
+    for _ in range(10):
+        if os.path.exists(os.path.join(search_dir, 'train.py')):
+            if search_dir not in sys.path:
+                sys.path.insert(0, search_dir)
+            return search_dir
+        parent_dir = os.path.dirname(search_dir)
+        if parent_dir == search_dir:
+            break
+        search_dir = parent_dir
+    
+    raise ValueError(f"Could not find TRAM root directory starting from {current_dir}")
+
+bootstrap_tram_path()
 
 import torch
 import argparse
@@ -16,6 +36,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--video", type=str, default='./example_video.mov', help='input video')
 parser.add_argument("--static_camera", action='store_true', help='whether the camera is static')
 parser.add_argument("--visualize_mask", action='store_true', help='save deva vos for visualization')
+parser.add_argument('--output_dir', type=str, default=None, help='output directory')
+parser.add_argument('--debug', action='store_true', help='enable debug mode for SLAM analysis')
 args = parser.parse_args()
 
 # File and folders
@@ -23,7 +45,10 @@ file = args.video
 root = os.path.dirname(file)
 seq = os.path.basename(file).split('.')[0]
 
-seq_folder = f'results/{seq}'
+if args.output_dir is not None:
+    seq_folder = args.output_dir
+else:
+    seq_folder = f'results/{seq}'
 img_folder = f'{seq_folder}/images'
 os.makedirs(seq_folder, exist_ok=True)
 os.makedirs(img_folder, exist_ok=True)

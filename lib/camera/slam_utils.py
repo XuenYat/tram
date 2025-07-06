@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 import cv2
+import os
 from glob import glob
 import argparse
 
@@ -11,6 +12,11 @@ import evo.main_ape as main_ape
 from evo.core.metrics import PoseRelation
 from torchvision.transforms import Resize
 
+# 使用相对导入path_utils
+from ..utils.path_utils import get_pretrain_path
+
+default_weights = get_pretrain_path('droid.pth')
+
 # Some default settings for DROID-SLAM
 parser = argparse.ArgumentParser()
 parser.add_argument("--imagedir", type=str, help="path to image directory")
@@ -18,7 +24,7 @@ parser.add_argument("--calib", type=str, help="path to calibration file")
 parser.add_argument("--t0", default=0, type=int, help="starting frame")
 parser.add_argument("--stride", default=1, type=int, help="frame stride")
 
-parser.add_argument("--weights", default="data/pretrain/droid.pth")
+parser.add_argument("--weights", default=default_weights)
 parser.add_argument("--buffer", type=int, default=512)
 parser.add_argument("--image_size", default=[240, 320])
 parser.add_argument("--disable_vis", action="store_true")

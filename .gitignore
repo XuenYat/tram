@@ -45,3 +45,8 @@ ipython_config.py
 
 # pyenv
 .python-version
+
+
+scripts/analyze_scripts/
+scripts/estimate_camera_debug.py
+lib/camera/vggt_ba.py

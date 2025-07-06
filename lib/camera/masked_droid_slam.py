@@ -1,6 +1,16 @@
 import sys
-sys.path.insert(0, 'thirdparty/DROID-SLAM/droid_slam')
-sys.path.insert(0, 'thirdparty/DROID-SLAM')
+import os
+
+# 添加DROID-SLAM路径
+current_dir = os.path.dirname(os.path.abspath(__file__))
+tram_root = os.path.abspath(os.path.join(current_dir, '..', '..'))
+droid_path1 = os.path.join(tram_root, 'thirdparty', 'DROID-SLAM', 'droid_slam')
+droid_path2 = os.path.join(tram_root, 'thirdparty', 'DROID-SLAM')
+
+if droid_path1 not in sys.path:
+    sys.path.insert(0, droid_path1)
+if droid_path2 not in sys.path:
+    sys.path.insert(0, droid_path2)
 
 from tqdm import tqdm
 import numpy as np
@@ -16,8 +26,11 @@ from .slam_utils import get_dimention, est_calib, image_stream, preprocess_masks
 from .est_scale import est_scale_hybrid
 from ..utils.rotation_conversions import quaternion_to_matrix
 
-torch.multiprocessing.set_start_method('spawn')
-
+try:
+    torch.multiprocessing.set_start_method('spawn')
+except RuntimeError:
+    # Already set, ignore
+    pass
 
 def run_metric_slam(img_folder, masks=None, calib=None, is_static=False):
     '''
@@ -218,5 +231,4 @@ def test_slam(imagedir, masks, calib, stride=10, max_frame=50):
     del droid
 
     return reprojection_error, static_camera
-
 

@@ -1,4 +1,5 @@
 import sys
+import os
 sys.path.insert(0, 'thirdparty/Tracking-Anything-with-DEVA')
 
 from os import path
@@ -18,9 +19,15 @@ from deva.inference.object_info import ObjectInfo
 from deva.inference.frame_utils import FrameInfo
 from deva.inference.demo_utils import get_input_frame_for_deva
 
+# 使用相对导入path_utils
+from ..utils.path_utils import get_pretrain_path
+
+# Get the DEVA model path
+deva_model_path = get_pretrain_path('DEVA-propagation.pth')
+
 # Some DEVA tracking settings
 args = ['--chunk_size', '4', '--amp', '--temporal_setting', 'semionline',
-        '--size', '480', '--model', 'data/pretrain/DEVA-propagation.pth',
+        '--size', '480', '--model', deva_model_path,
         '--suppress_small_objects', '--max_long_term_elements', '1000', '--max_num_objects', '50',
         '--detection_every', '5']
 
