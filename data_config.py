@@ -19,7 +19,7 @@ DATASET_NPZ_PATH = './datasets/dataset_ann'
 
 H36M_ROOT         = join(ROOT, 'h36m')
 PW3D_ROOT         = join(ROOT, '3dpw')
-BEDLAM_ROOT       = join(ROOT, 'bedlam_30fps')
+BEDLAM_ROOT       = join(ROOT, 'bedlam_30fps/images')
 EMDB_ROOT         = join(ROOT, 'emdb')
 
 # Path to test/train npz files

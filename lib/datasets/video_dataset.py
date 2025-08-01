@@ -42,7 +42,7 @@ class VideoDataset(Dataset):
         self.data = np.load(config.DATASET_FILES[is_train][dataset])
 
         self.img_dir = config.DATASET_FOLDERS[dataset]
-        self.imgname = self.data['imgname'].astype(np.string_)
+        self.imgname = self.data['imgname'].astype(np.bytes_)
         self.normalization = normalization
         self.normalize_img = Compose([
                             ToTensor(),

@@ -27,7 +27,7 @@ class BaseDataset(Dataset):
         self.data = np.load(config.DATASET_FILES[is_train][dataset])
 
         self.img_dir = config.DATASET_FOLDERS[dataset]
-        self.imgname = self.data['imgname'].astype(np.string_)
+        self.imgname = self.data['imgname'].astype(np.bytes_)
         self.crop_size = crop_size
 
         # Bounding boxes are assumed to be in the center and scale format

@@ -46,7 +46,7 @@ def main(cfg):
     # Networks and optimizers
     model = HMR_VIMO(cfg=cfg)
     checkpoint = cfg.MODEL.CHECKPOINT
-    state_dict = torch.load(checkpoint, map_location=cfg.DEVICE, weights_only=True)
+    state_dict = torch.load(checkpoint, map_location=cfg.DEVICE, weights_only=False)
     _ = model.load_state_dict(state_dict['state_dict'], strict=False)
 
     model = model.to(cfg.DEVICE)
