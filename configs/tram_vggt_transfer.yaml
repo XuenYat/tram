@@ -1,0 +1,88 @@
+# VGGT迁移学习配置文件
+# configs/tram_vggt_transfer.yaml
+
+LOGDIR: ''
+DEVICE: 'cuda'
+OUTPUT_DIR: 'results'
+NUM_WORKERS: 12
+SEED_VALUE: 42
+IMG_RES: 256  # 高分辨率输入
+
+DATASET:
+  LIST: ['3dpw_vid', 'h36m_vid', 'bedlam_vid']
+  PARTITION: [0.165, 0.165, 0.67]
+  SEQ_LEN: 16
+  TEST: 'emdb_1'
+
+# VGGT相机损失权重配置
+LOSS:
+  # 关键点损失
+  KPT2D: 5.0
+  KPT3D: 5.0
+  
+  # SMPL损失
+  SMPL_PLUS: 1.0
+  V3D: 1.0
+  
+  # 相机损失作为辅助，权重降低
+  CAMERA_LOSS: 0.5     # 主要用于稳定相机预测
+  CAMERA_TRANS: 0.1
+  CAMERA_ROT: 0.1  
+  CAMERA_FOV: 0.05
+  CAMERA_DEPTH: 0.05
+
+TRAIN:
+  RESUME: None
+  LOAD_LATEST: True
+  
+  # 批次和学习率配置
+  BATCH_SIZE: 16           # 518分辨率降低batch size
+  
+  # 多学习率策略
+  MULTI_LR: True
+  LR: 1e-5                # backbone基础学习率
+  LR2: 3e-5               # SMPL头学习率
+  LR_CAMERA_FINE_TUNE: 5e-6  # VGGT相机头微调学习率
+  
+  # 训练策略
+  WARMUP_STEPS: 3000
+  SUMMARY_STEP: 50
+  VALID_STEP: 500
+  SAVE_STEP: 2000
+  MAX_STEP: 300000
+  
+  # 优化器配置
+  GAMMA: 0.9
+  UPDATE_ITER: 1
+  CLIP_GRADIENT: True
+  CLIP_NORM: 1.0
+  WD: 0.01
+  OPT: 'AdamW'
+  LOSS_SCALE: 1
+
+MODEL:
+  # 原TRAM模型配置
+  CHECKPOINT: 'data/pretrain/hmr2b/epoch=35-step=1000000.ckpt'
+  ST_MODULE: True
+  MOTION_MODULE: True
+  ST_HDIM: 512
+  MOTION_HDIM: 384
+  ST_NLAYER: 6
+  MOTION_NLAYER: 6
+  
+  # VGGT迁移学习配置
+  VGGT_CHECKPOINT: '~/.cache/torch/hub/checkpoints/model.pt'
+  FREEZE_TRAM_BACKBONE: True      # 冻结VGGT backbone
+  VGGT_CAMERA_FINE_TUNE: True     # 允许相机头微调
+  
+  # 实验名称
+EXP_NAME: 'tram_vggt_transfer_v1'
+
+# 系统配置
+CUDNN:
+  BENCHMARK: True
+  DETERMINISTIC: False
+  ENABLED: True
+
+# 备注
+COMMENT: 'TRAM with VGGT transfer learning - camera head integration'
